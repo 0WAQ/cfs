@@ -1,0 +1,15 @@
+{
+    "tasks": [
+        {
+            "label": "生成项目",
+            "type": "shell",
+            "linux": {
+                "command": "bash ${workspaceRoot}/script/build.sh"
+            },
+            "options": {
+                "cwd": "${workspaceRoot}"
+            }
+        }
+    ],
+    "version": "2.0.0"
+}

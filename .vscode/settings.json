@@ -1,0 +1,18 @@
+{
+    "files.associations": {
+        "*.h": "c",
+        "*.mkf": "makefile",
+        "*.x86": "makefile",
+        "*.S": "asm-intel-x86-generic",
+        "*.mki": "makefile",
+        "*.lds": "linkerscript",
+        "*.mh": "makefile",
+        "*.tcc": "c",
+        "limits": "c",
+        "numeric": "c",
+        "streambuf": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c"
+    }
+}
