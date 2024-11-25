@@ -23,20 +23,20 @@ void rbt_test()
 
     for(int i = 0; i < TASK_NR; i++) {
         task = task_table + i;
-        task_init(task, i);
+        task_init(task, &rq, "0", i, 0);
         task->se.vruntime = rand()%1000 + 1;
     }
 
     for(int i = 0; i < TASK_NR; i++) {
         task = task_table + i;
         check(&rq.rb_root, i);
-        enquque_task(&rq, &task->se);
+        enqueue_task(&rq, task);
     }
 
     for(int i = 0; i < TASK_NR; i++) {
         task = task_table + i;
         check(&rq.rb_root, TASK_NR - i);
-        dequque_task(&rq, &task->se);
+        dequeue_task(&rq);
     }
 }
 

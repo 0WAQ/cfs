@@ -1,1 +1,1 @@
-./build/tests/tests
+./build/test/test_schedule

@@ -10,19 +10,46 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/**
+ * @brief 权重表
+ */
+const int NICE_OFFSET = 40;
+const int NICE_0_LOAD = 1024;       // 优先级为0的任务的权重
+
+// 每个权重的比值大约为1.25, 优先级为0的进程权重为1024
+const int sched_nice_to_weight[40] = {
+ /* -20 */     88761,     71755,     56483,     46273,     36291,
+ /* -15 */     29154,     23254,     18705,     14949,     11916,
+ /* -10 */      9548,      7620,      6100,      4904,      3906,
+ /*  -5 */      3121,      2501,      1991,      1586,      1277,
+ /*   0 */      1024,       820,       655,       526,       423,
+ /*   5 */       335,       272,       215,       172,       137,
+ /*  10 */       110,        87,        70,        56,        45,
+ /*  15 */        36,        29,        23,        18,        15,
+};
+
 void cfs_init(struct cfs_rq* rq) {
     rq->rb_root = RB_ROOT;
     rq->rb_leftmost = NULL;
     rq->min_vruntime = 0;
     rq->nr = 0;
+
+    rq->total_weight = 0;
 }
 
-// TODO:
-void enquque_task(struct cfs_rq* rq, struct sched_entity* se) {
+uint32_t calc_delta_fair(uint32_t delta_exec, uint32_t load_weight) {
+    /**
+     * 举个例子, 若任务A的权重为2048, 即2倍与标准任务(1024)
+     *          并且该任务的执行时间(delta_exec)为100
+     *          
+     * 那么 delta_vruntime = 100 * 2048 / 1024 = 200
+     */
+    return delta_exec * load_weight / NICE_0_LOAD;
+}
 
-    // 
-    se->vruntime += rq->min_vruntime;
+void enqueue_task(struct cfs_rq* rq, struct task_struct* p) {
 
+    struct sched_entity* se = &p->se;
     struct rb_node** link = &rq->rb_root.rb_node;
     struct rb_node*  parent = NULL;
     struct sched_entity* entry = NULL;
@@ -53,35 +80,62 @@ void enquque_task(struct cfs_rq* rq, struct sched_entity* se) {
     // 平衡树
     rb_insert_color(&se->cfs_node, &rq->rb_root);
 
-    // 更新vruntime
-    update_load_add();
-
     rq->nr++;
     se->on_rq = 1;
-
-    container_of(se, struct task_struct, se)->state = RUNNING;
+    p->state = RUNNING;
 }
 
-void dequque_task(struct cfs_rq* rq, struct sched_entity* se) {
-    if(rq->rb_leftmost == &se->cfs_node) {
-        rq->rb_leftmost = rb_next(&se->cfs_node);
+struct task_struct* dequeue_task(struct cfs_rq* rq) {
+    if(rq->nr == 0) {
+        return NULL;
     }
 
-    rb_erase(&se->cfs_node, &rq->rb_root);
-    update_load_sub();
+    // 获取最左节点
+    struct rb_node* node = rq->rb_leftmost;
+    struct sched_entity* se = container_of(node, struct sched_entity, cfs_node);
+    struct task_struct* p = container_of(se, struct task_struct, se);
+
+    // 若树中还有节点, 那么新的最左节点是node的下一个
+    if(rq->nr > 1) {
+        rq->rb_leftmost = rb_next(node);
+    }
+
+    // 删除最左节点
+    rb_erase(node, &rq->rb_root);
 
     rq->nr--;
     se->on_rq = 0;
+    p->state = OTHER;
 
-    container_of(se, struct task_struct, se)->state = OTHER;
+    return p;
 }
 
-void update_load_add() {
-    // TODO:
+void task_dispatch(struct cfs_rq* rq) {
+
 }
 
-void update_load_sub() {
-    // TODO:
+void update_vruntime(struct sched_entity* se, uint32_t delta_exec) {
+
+    // 计算vruntime的变化
+    uint32_t delta_vruntime = calc_delta_fair(delta_exec, se->load.weight);
+
+    // 更新vruntime
+    se->vruntime += delta_vruntime;
+}
+
+void update_load_set(struct load_weight* lw, unsigned long w) {
+    lw->weight = w;
+    lw->inv_weight = 0;
+}
+
+void update_load_add(struct load_weight* lw, unsigned long inc) {
+    lw->weight += inc;
+    lw->inv_weight = 0;
+}
+
+void update_load_sub(struct load_weight* lw, unsigned long inc) {
+    lw->weight -= inc;
+    lw->inv_weight = 0;
 }
 
 void check(struct rb_root* rb_root, uint32_t nr_nodes) {

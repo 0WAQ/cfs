@@ -11,4 +11,4 @@ endmacro(ADDTEST)
 
 
 ADDTEST(${PROJECT_NAME}_rbtree)
-
+ADDTEST(${PROJECT_NAME}_schedule)

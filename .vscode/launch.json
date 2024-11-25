@@ -8,12 +8,12 @@
             "name": "(gdb) 启动",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/build/tests/tests",
+            "program": "${workspaceRoot}/build/test/test_schedule",
             "cwd": "${workspaceRoot}",
             "args": [],
             "stopAtEntry": true,
             "linux": {
-                "preLaunchTask": "生成项目",
+                // "preLaunchTask": "生成项目",
                 "miDebuggerPath": "/usr/bin/gdb"
             }
         }
