@@ -13,7 +13,4 @@ project(cfs)
 
 # 添加子项目
 add_subdirectory(./source/)
-add_subdirectory(./tests)
-
-# 添加编译依赖, tests依赖于cfs
-add_dependencies(tests cfs)
+add_subdirectory(./test)
