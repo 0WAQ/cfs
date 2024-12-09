@@ -5,10 +5,11 @@
 
 #include "task.h"
 #include "cfs.h"
+#include "tools/rbtree.h"
 #include "common/macros.h"
 
-#define TASK_NR 10
-#define EXEC    100
+#define TASK_NR         10
+#define EXEC_TIME       100
 
 // 方便调试查看信息
 struct pii {
@@ -20,14 +21,19 @@ struct cfs_rq rq;
 struct pii debug[TASK_NR];
 
 void schedule();
+void print(struct task_struct* p);
 
 int main() {
     cfs_init(&rq);
 
     struct task_struct task_table[TASK_NR];
     for(int i = 0; i < TASK_NR; i++) {
-        char name = i + '0';
-        task_init(task_table + i, &rq, &name, i, i);
+        char buf[32];
+        memcpy(buf, "task ", 5);
+        buf[5] = i + '0';
+        buf[6] = '\0';
+
+        task_init(task_table + i, &rq, buf, i, i);
         enqueue_task(&rq, task_table + i);
     }
     
@@ -47,8 +53,20 @@ void schedule() {
     while(1)
     {
         now = dequeue_task(&rq);
-        uint32_t delta_exec = EXEC;  // 模拟执行了100个时间单位
+        
+        // 模拟执行了100个时间单位
+        /////////////////////////////////////////////////////////
+        uint32_t delta_exec = EXEC_TIME;
+        sleep(1);
+        /////////////////////////////////////////////////////////
+
         update_vruntime(&now->se, delta_exec);
+        print(now);
         enqueue_task(&rq, now);
     }
+}
+
+void print(struct task_struct* p)
+{
+    printf("[%s] priority: %lu, weight: %d, vruntime: %lu\n", p->name, p->prio, p->se.load.weight, p->se.vruntime);
 }

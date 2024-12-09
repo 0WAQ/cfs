@@ -39,7 +39,7 @@ struct rb_node {
  */
 struct rb_root {
     struct rb_node* rb_node;
-}rb_root;
+};
 
 
 #define RB_ROOT             ((struct rb_root){NULL, })

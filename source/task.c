@@ -13,7 +13,7 @@ extern int sched_nice_to_weight[40];
 void task_init(struct task_struct* task, struct cfs_rq* rq, char* name, uint32_t pid, int prio) {
     struct sched_entity* se = &task->se;
     task->pid = pid;
-    memcpy(task->name, name, strlen(name));
+    memcpy(task->name, name, strlen(name) + 1);
     task->state = OTHER;
     task->prio = prio;
 
