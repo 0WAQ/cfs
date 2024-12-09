@@ -138,20 +138,22 @@ void update_load_sub(struct load_weight* lw, unsigned long inc) {
     lw->inv_weight = 0;
 }
 
-void check(struct rb_root* rb_root, uint32_t nr_nodes) {
+int check(struct rb_root* rb_root, uint32_t nr_nodes) {
     
-    int cnt = 0, blacks = 0;
-    
+    int cnt = 0, blacks = 0, no_warn = 1;
+
     struct rb_node* node; uint32_t prev_key = 0;
     for(node = rb_first(rb_root); node != NULL; node = rb_next(node)) {
         struct sched_entity* se = rb_entry(node, struct sched_entity, cfs_node);
 
         if(se->vruntime < prev_key) {
             printf("[WARN] key(%d) < prev_key(%d).\n", se->vruntime, prev_key);
+            no_warn = 0;
         }
 
         if(rb_is_red(node) && (!rb_parent(node) || rb_is_red(rb_parent(node)))) {
             printf("[WARN] two red ndoes.\n");
+            no_warn = 0;
         }
 
         if(cnt == 0) {
@@ -159,11 +161,18 @@ void check(struct rb_root* rb_root, uint32_t nr_nodes) {
         }
         else if((!node->rb_left || !node->rb_right) && (blacks != black_path_count(node))) {
             printf("[WARN] black count wrongs.\n");
+            no_warn = 0;
         }
 
         prev_key = se->vruntime;
         cnt++;
     }
+
+    if(no_warn) {
+        printf("rbtree with %d nodes no warn.\n", nr_nodes);
+    }
+
+    return no_warn;
 }
 
 int black_path_count(struct rb_node* node) {

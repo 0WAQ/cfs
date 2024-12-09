@@ -11,6 +11,7 @@
 static struct cfs_rq rq;
 static struct task_struct task_table[TASK_NR];
 static unsigned int seed;
+static int no_warn = 1, is_ok = 1;
 
 void rbt_test()
 {
@@ -29,20 +30,30 @@ void rbt_test()
 
     for(int i = 0; i < TASK_NR; i++) {
         task = task_table + i;
-        check(&rq.rb_root, i);
+        no_warn = check(&rq.rb_root, i);
+        if(!no_warn) {
+            is_ok = 0;
+        }
         enqueue_task(&rq, task);
     }
 
     for(int i = 0; i < TASK_NR; i++) {
         task = task_table + i;
-        check(&rq.rb_root, TASK_NR - i);
+        no_warn = check(&rq.rb_root, TASK_NR - i);
+        if(!no_warn) {
+            is_ok = 0;
+        }
         dequeue_task(&rq);
+    }
+
+    if(is_ok) {
+        printf("test_rbtree complete! no warn.\n");
     }
 }
 
 int main(int argc, char* argv[])
 {
     // 测试红黑树功能
-    rbt_test(); // TODO: 待删除
+    rbt_test();
     return 0;
 }

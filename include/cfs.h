@@ -52,7 +52,7 @@ void update_load_sub(struct load_weight* lw, unsigned long dec);
 /**
  * @brief 检查红黑树是否合法
  */
-void check(struct rb_root* rb_root, uint32_t nr_nodes);
+int check(struct rb_root* rb_root, uint32_t nr_nodes);
 
 /**
  * @brief node向上有多少个黑色节点
