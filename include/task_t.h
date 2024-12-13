@@ -20,6 +20,7 @@ typedef enum {
 struct task_struct {    
     
     uint32_t pid;               // 进程ID
+    uint32_t tid;
 
     char name[TASK_NAME_SIZE];  // 任务名
 

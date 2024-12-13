@@ -8,14 +8,14 @@
 
 #include "types.h"
 
-#define offset_of(container_type, member_type) \
-        ((uint64_t)&((container_type*)0)->member_type)
+#define offset_of(container_type, member_name) \
+        ((uint64_t)&((container_type*)0)->member_name)
 
-#define container_of(member_val, container_type, member_type) \
-    ( (container_type*)( (uint64_t)member_val - offset_of(container_type, member_type) ) )
+#define container_of(member_val, container_type, member_name) \
+    ( (container_type*)( (uint64_t)member_val - offset_of(container_type, member_name) ) )
 
-#define entry_of(member_val, container_type, member_type) \
-    ((container_type*)(member_val ? container_of(member_val, container_type, member_type) : 0))
+#define entry_of(member_val, container_type, member_name) \
+    ((container_type*)(member_val ? container_of(member_val, container_type, member_name) : 0))
 
 
 #endif // COMMON_H 

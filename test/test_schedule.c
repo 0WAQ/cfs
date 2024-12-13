@@ -14,7 +14,7 @@
 // 方便调试查看信息
 struct pii {
     uint32_t weight;
-    uint32_t* vruntime;
+    uint32_t vruntime;
 };
 
 struct cfs_rq rq;
@@ -39,7 +39,7 @@ int main() {
     
     for(int i = 0; i < TASK_NR; i++) {
         debug[i].weight = task_table[i].se.load.weight;
-        debug[i].vruntime = &task_table[i].se.vruntime;
+        debug[i].vruntime = task_table[i].se.vruntime;
     }
 
     // 开始模拟
