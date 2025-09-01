@@ -6,8 +6,6 @@
 #ifndef TASK_T_H
 #define TASK_T_H
 
-#include "common/types.h"
-#include "tools/rbtree_t.h"
 #include "cfs_t.h"
 
 #define TASK_NAME_SIZE          (64)

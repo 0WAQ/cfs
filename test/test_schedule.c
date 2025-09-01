@@ -1,12 +1,9 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
 #include "task.h"
 #include "cfs.h"
-#include "tools/rbtree.h"
-#include "common/macros.h"
 
 #define TASK_NR         10
 #define EXEC_TIME       100
@@ -68,5 +65,6 @@ void schedule() {
 
 void print(struct task_struct* p)
 {
-    printf("[%s] priority: %lu, weight: %d, vruntime: %lu\n", p->name, p->prio, p->se.load.weight, p->se.vruntime);
+    printf("[%s] priority: %d, weight: %d, vruntime: %d\n",
+            p->name, p->prio, p->se.load.weight, p->se.vruntime);
 }

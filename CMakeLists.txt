@@ -11,6 +11,8 @@ set(CMAKE_C_FLAGS "-g -O0")
 # 项目名称
 project(cfs)
 
+include_directories("./include/")
+
 # 添加子项目
 add_subdirectory(./source/)
 add_subdirectory(./test)
